@@ -55,13 +55,19 @@ int injector__ptrace(int request, pid_t pid, long addr, long data, const char *r
 
 int injector__attach_process(const injector_t *injector)
 {
-    PTRACE_OR_RETURN(PTRACE_ATTACH, injector, 0, 0);
+    int tids[1000];
+    int len = get_tids(injector->pid, tids, 1000);
+    for (int i = 0; i < len; i++)
+        injector__ptrace(PTRACE_ATTACH, tids[i], 0, 0, NULL);
     return 0;
 }
 
 int injector__detach_process(const injector_t *injector)
 {
-    PTRACE_OR_RETURN(PTRACE_DETACH, injector, 0, 0);
+    int tids[1000];
+    int len = get_tids(injector->pid, tids, 1000);
+    for (int i = 0; i < len; i++)
+        injector__ptrace(PTRACE_DETACH, tids[i], 0, 0, NULL);
     return 0;
 }
 

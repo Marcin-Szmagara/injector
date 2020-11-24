@@ -24,6 +24,7 @@
  */
 #include <stdio.h>
 #include <stdarg.h>
+#include <dirent.h>
 #include "injector_internal.h"
 
 char injector__errmsg[512];
@@ -65,4 +66,25 @@ const char *injector__arch2name(arch_t arch)
         return "ARM EABI";
     }
     return "?";
+}
+
+int get_tids(int pid, int* buf, int sz)
+{
+    char path[1000];
+    sprintf(path, "/proc/%d/task/", pid);
+
+    struct dirent* dr = NULL;
+    DIR* dp = opendir(path);
+    int i = 0;
+    if (dp != NULL)
+        while ((dr = readdir(dp)))
+        {
+            int tid = atoi(dr->d_name);
+            if (i < sz)
+            {
+                if (tid) buf[i++] = tid;
+            }
+            else return -1;
+        }
+    return i;
 }

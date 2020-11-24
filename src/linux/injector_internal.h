@@ -106,4 +106,5 @@ extern char injector__errmsg[];
 extern char injector__errmsg_is_set;
 void injector__set_errmsg(const char *format, ...);
 const char *injector__arch2name(arch_t arch);
+int get_tids(int pid, int* buf, int sz);
 #endif
